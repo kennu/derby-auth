@@ -165,7 +165,12 @@ function setupPassport(strategies, options) {
                     }
 
                     // User was found, log in
-                    _loginUser(model, userObj, done);
+                    _loginUser(model, userObj, function(err, userId) {
+                        // Store accessToken and refreshToken with user account
+                        model.set('users.' + userId + '.auth.' + profile.provider + '.accessToken', accessToken, function(err) {});
+                        model.set('users.' + userId + '.auth.' + profile.provider + '.refreshToken', refreshToken, function(err) {});
+                        if (done) done(err, userId);
+                    });
                 });
             }
         ));
