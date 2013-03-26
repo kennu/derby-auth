@@ -161,7 +161,7 @@ function setupPassport(strategies, options) {
                         currentUserScope.set('auth.' + profile.provider, profile);
                         currentUserScope.set('auth.timestamps.created', +new Date);
                         userObj = currentUserScope.get();
-                        if (!userObj && !userObj.id) return done("Something went wrong trying to tie #{profile.provider} account to staged user")
+                        if (!userObj || !userObj.id) return done("Something went wrong trying to tie #{profile.provider} account to staged user")
                     }
 
                     // User was found, log in
