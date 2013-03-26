@@ -156,12 +156,20 @@ function setupPassport(strategies, options) {
                     if (err) return done(err);
 
                     var userObj = providerUser.get()
+                    var currentUserScope = currentUser;
                     if (!userObj) {
-                        var currentUserScope = currentUser;
                         currentUserScope.set('auth.' + profile.provider, profile);
                         currentUserScope.set('auth.timestamps.created', +new Date);
                         userObj = currentUserScope.get();
                         if (!userObj || !userObj.id) return done("Something went wrong trying to tie #{profile.provider} account to staged user")
+                    } else {
+                        // Check if profile has been modified.
+                        if (JSON.stringify(userObj.auth[profile.provider]) != JSON.stringify(profile)) {
+                            // Yes, update new profile data.
+                            console.log('Profile data updated');
+                            currentUserScope.set('auth.' + profile.provider, profile);
+                            userObj = currentUserScope.get();
+                        }
                     }
 
                     // User was found, log in
